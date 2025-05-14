@@ -1,7 +1,9 @@
 // The 'knightfall' program.
 program knightfall.aleo {
 
-    // Note: Need additional fields?
+    // Note: 
+    // 1. make into a mapping so we can look this up
+    // 2. sum on chain records in dapp and send that sum to this program before create_game
     record PlayerRecord {
         owner: address,
         games_won: u32,
@@ -11,60 +13,88 @@ program knightfall.aleo {
     record GameOutcomeSignature {
         winner: address,
         loser: address,
-        winner_signed: bool,
-        loser_signed: bool,
+        // transcript: u64, not sure what type ??
+        // winner_signed: bool,
+        // loser_signed: bool,
     }
 
-    // NOTE: Is there some way to ensure that a single user
-    // doesn't just keep generating new records?
-    transition generate_record(
-        player: address
-    ) -> PlayerRecord {
-        // Possible to check existing records here or no?
-
-        return PlayerRecord {
-            owner: player,
-            games_won: 0u32,
-            games_played: 0u32
-        }
+    record GameRequest {
+        owner: address,
+        player_address: address,
+        opponent_address: address,
+        amount: u64,
     }
 
-    transition generate_signature(
-        winner: address,
-        loser: address,
-        signatures: u8
-    ) -> GameOutcomeSignature {
+    record GameRecord {
+        owner: address,
+        player_one: address,
+        player_two: address,
+        winnings: u64,
+    }
 
-        let winner_signed: bool = (signatures & 1u8) != 0u8; // bit 0 
-        let loser_signed: bool = (signatures & 2u8) != 0u8; // bit 01
+    // collect_stake, take opponent_address as input and amount for the game (from Python Script)
+    transition collect_stake(owner_address: address, opponent_address: address, amount: u64) -> GameRequest {
+        // Creates new Game Request
+        // owner address: aleo1vcg3xac7ssx2lx6x4ypcnyv53n0yntqcd5p4l6kravajtlnh5cysryyya3
+        return GameRequest {
+            owner: owner_address,
+            player_address: self.caller,
+            opponent_address,
+            amount: amount,
+        };
+    }
 
-        // 
-        return GameOutcomeSignature {
+    // create_game should take in 2 record inputs, check they both staked the amount, and then create a GameRecord
+    transition create_game(owner_address: address, player_one: GameRequest, player_two: GameRequest) -> GameRecord {
+        // Ensure the caller is the auctioneer.
+        assert_eq(player_one.amount, player_two.amount);
+
+        return GameRecord {
+                owner_address: address,
+                player_one.player_address: address,
+                player_two.player_address: address,
+                winnings: player_one.amount + player_two.amount,
+            };
+    }
+
+    // Python takes the game record and does game play
+    //      sends signal that then triggers end_game function
+    //      have this update the mapping
+
+    // inline calculate_games_won() -> PlayerRecord {
+    //     record PlayerRecord {
+    //             owner: player_one,
+    //             games_won: u32,
+    //             games_played: u32,
+    //         }
+    // }
+
+    transition finish_game(winner: address, loser: address, player_one: address, player_two: address) -> GameOutcomeSignature, PlayerRecord, PlayerRecord {
+        
+        // TODO: update calculate_games_won to output new PlayerRecord for each player
+        
+        let game_outcome = GameOutcomeSignature {
             winner: winner,
             loser: loser,
-            winner_signed: winner_signed,
-            loser_signed: loser_signed,
+            // transcript: u64, not sure what type ??
+            // winner_signed: bool,
+            // loser_signed: bool,
         }
+
+        let player_one_rank = PlayerRecord {
+            owner: player_one,
+            games_won: false, // setting to false right now, so it means nothing, can change once we have a helper to calculate
+            games_played: false,
+        }
+
+        let player_two_rank = PlayerRecord {
+            owner: player_two,
+            games_won: false, // setting to false right now, so it means nothing, can change once we have a helper to calculate
+            games_played: false,
+        }
+
+        return (game_outcome, player_one_rank, player_two_rank)
+        
     }
 
-    // TODO:
-
-    // Can they each provide a credits.aleo record to submit as wager???
-    transition initiate_game(
-        player_1: PlayerRecord,
-        player_2: PlayerRecord,
-        player_1_wager: u64,
-        player_2_wager: u64,
-    ) -> bool {
-        return true
-    }
-
-    transition end_game(
-        player_1_signature: 
-    )
-
-    transition main(public a: u32, b: u32) -> u32 {
-        let c: u32 = a + b;
-        return c;
-    }
 }
