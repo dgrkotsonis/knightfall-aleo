@@ -121,4 +121,8 @@ program knightfall.aleo {
         
     }
 
+    // TODO: add function to handle draws, split the fee between 2 players, 
+    //  return remaining between both players (either 50/50 or by rank)
+    // async transition finish_game_draw
+
 }
