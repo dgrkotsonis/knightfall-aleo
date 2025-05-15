@@ -2,6 +2,6 @@
   "program": "provable_toronoto25_knightfall.aleo",
   "version": "0.1.0",
   "description": "",
-  "license": "",
+  "license": "MIT",
   "dependencies": null
 }
