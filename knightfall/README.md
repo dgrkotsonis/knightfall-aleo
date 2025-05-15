@@ -26,6 +26,63 @@ To test the `create_game` function, run:
 To test the `finish_game` function, run: 
 -TODO-
 
+## Running the Fool's Mate Example Locally
+
+### LOCAL NODE
+
+We can run the Fool's Mate script locally to test using [amareleo-chain](https://github.com/kaxxa123/amareleo-chain). Follow the [installation instructions](https://github.com/kaxxa123/amareleo-chain?tab=readme-ov-file#22-install-from-source) and then spin up a node:
+
+```bash
+amareleo-chain start
+```
+
+If you want to restart the chain (to test redeployment, for example), run:
+
+```bash
+amareleo-chain clean; amareleo-chain start
+```
+
+### KEYS
+
+The test script requires three Aleo accounts: one for the knightfall python engine and one for each player. It's recommended to use the example keys with amareleo-chain since they have a lot of credits. Copy the `keys.json.example` file to `keys.json` (or add the keys you want to use to a `keys.json` file).
+
+### DEPLOY THE PROGRAM
+
+Now we can deploy the program to our local node. You should be able to simply run the script and answer the prompt:
+
+```bash
+./deploy-program.sh
+```
+
+If, for some reason, you want to use a different endpoint or network, you can define them as environment variables:
+
+```bash
+export NETWORK=testnet
+export ENDPOINT=http://localhost:3030
+```
+
+### RUNNING THE SCRIPT
+
+Generally speaking you should now be able to run the script as-is:
+```bash
+./run-fools-mate.sh
+```
+
+If, for some reason, you want to use a different endpoint or network, you can define them as environment variables:
+
+```bash
+export NETWORK=testnet
+export ENDPOINT=http://localhost:3030
+```
+
+The script will:
+* Execute the `collect_stake` function as white
+* Execute the `collect_stake` function as black
+* Execute the `create_game` function as the knightfall engine
+* Execute a series of moves against the knightfall engine to play the game. In the future these moves could be done via leo functions as well
+* Once the game is complete, the `finish_game` function is executed and the final board state is displayed
+
+
 ## On Chain
 
 ```bash
