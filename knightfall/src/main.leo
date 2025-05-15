@@ -1,5 +1,5 @@
 // The 'knightfall' program.
-program knightfall.aleo {
+program provable_toronoto25_knightfall.aleo {
 
     // On-chain storage of the players `ranks` map, with `address` as the key,
     // and `u64` as the value.

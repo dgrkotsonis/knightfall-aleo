@@ -1,4 +1,4 @@
-program knightfall.aleo;
+program provable_toronoto25_knightfall.aleo;
 
 record GameRequest:
     owner as address.private;
@@ -40,7 +40,7 @@ function finish_game:
     input r0 as address.private;
     input r1 as address.private;
     async finish_game r0 r1 1u64 into r2;
-    output r2 as knightfall.aleo/finish_game.future;
+    output r2 as provable_toronoto25_knightfall.aleo/finish_game.future;
 
 finalize finish_game:
     input r0 as address.public;
