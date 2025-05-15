@@ -109,7 +109,7 @@ print_header "♞ Collect Stake ♞"
 echo Initiating game as black...
 write_env_file $BLACK_PRIVATE_KEY
 # echo "leo execute collect_stake $KNIGHTFALL_PUBLIC_KEY $BLACK_PUBLIC_KEY 1u64 -b --endpoint $ENDPOINT --program $PROGRAM"
-BLACK_TRANSACTION_ID=$(leo execute collect_stake $KNIGHTFALL_PUBLIC_KEY $BLACK_PUBLIC_KEY 1u64 -b --endpoint $ENDPOINT --program $PROGRAM -y | grep "⌛ Execution" | awk '{print $3}')
+BLACK_TRANSACTION_ID=$(leo execute collect_stake $KNIGHTFALL_PUBLIC_KEY $WHITE_PUBLIC_KEY 1u64 -b --endpoint $ENDPOINT --program $PROGRAM -y | grep "⌛ Execution" | awk '{print $3}')
 echo "Executed collect_stake for black, transaction ID: $BLACK_TRANSACTION_ID, waiting for record to become available"
 BLACK_ENCRYPTED_RECORD=$(get_transaction $BLACK_TRANSACTION_ID | jq -r '.execution.transitions[0].outputs[0].value')
 echo "Found encrypted record for black: $BLACK_ENCRYPTED_RECORD"

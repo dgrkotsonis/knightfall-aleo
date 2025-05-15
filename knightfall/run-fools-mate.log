@@ -1,0 +1,70 @@
+
+---------------------------------------------------------------------
+                           ♞ KNIGHTFALL ♘
+---------------------------------------------------------------------
+
+Setting up vars...
+No environment variable called NETWORK, setting to testnet
+No environment variable called ENDPOINT, setting to http://localhost:3030
+Cloning knightfall python repo...
+Deleting existing git clone...
+Cloning into 'knightfall-python'...
+
+---------------------------------------------------------------------
+                         ♘ Collect Stake ♘
+---------------------------------------------------------------------
+
+Initiating game as white...
+Executed collect_stake for white, transaction ID: at19sufv8l09ugt5cnj04lrjjp67ecwmy0vv6f272awpspcyjexzgps9c4qfa, waiting for record to become available
+Found encrypted record for white: record1qyqsq72rwulglsta0ausxqaeqrnk6lkk2p8ptj2vd6eatxkrewx2pvstqv88qmrp09jhyhmpv3j8yetnwdpsqqszqzx6maavehmy074nvw8lfxhfhctxy8rwdgm5d85nl9qxskqt9n4qk7hsux27ajvyxryezju0jntv99jmjp8mtgjqgt37472ega0y44gzzphhqur0dejkuazlv9jxgun9wde5xqqzqgqzclx4edavhj0zdzamek2z5xshgd7yyezvwv23cfde3w4gwz82czg0rrqs3zxve52dhhmqthhmcef9dmdtnxcelv3gm8300ke46tjepyrxzmt0w4h8ggcqqgqsqky3gex4z93gva6u8xpukn87t2x42jgjtacmgyu7ceq7rfgrctqscs69k2fqhq43k8w50r8gqfl4f4c07mcneqkyn8l5utk9az956y8stf5xup
+
+---------------------------------------------------------------------
+                         ♞ Collect Stake ♞
+---------------------------------------------------------------------
+
+Initiating game as black...
+Executed collect_stake for black, transaction ID: at19vstx4wsvzutxumpt9l0drywd0zyuzt67h832kf947s420gpksyqhek3e4, waiting for record to become available
+Found encrypted record for black: record1qyqsqmwk3g979pqme0ldeq6pudd7nhh8jl2zdza6t9rqxw3ukt64aqqdqv88qmrp09jhyhmpv3j8yetnwdpsqqszqq8l5nsd40qnh9r3fr2twudz3acys7q3v8uxjgg2hnu0n5usfxmqeutd0l6wc4uh8833vfnss5zdghkpczfceh0fue6w4c94zg8fd3cszphhqur0dejkuazlv9jxgun9wde5xqqzqgqv49uu2c7qcmuejmj74sh8gmrftc6tkd54yjkyad6kg678d9gnqr9tx8e402qwc46v7sh7dgvay64d5zzpczjp0ue2vycx0yerytjwpvrxzmt0w4h8ggcqqgqsqqyfq9y2v623mv0290zuvg93y939stywpyapl8epp070lyutlug309wemh63n5c4ndjptvxcgv66r2fznw7cptfly2svt7mjslh3vu8qyvrz5k
+
+---------------------------------------------------------------------
+                          ♞ Create Game ♘
+---------------------------------------------------------------------
+
+Creating game...
+Executed create_game, transaction ID: at1xk62su5gz2z93dy9tpykw3e99lef97wk4ep4aj3mqxdg84yjwuyq05fevy
+Found encrypted record for game: record1qyqsq9r7xf2af5z6e4520ugn3vqhzfmdxfzs8s0malaeavuewrswl9c9qv98qmrp09jhyhm0dej5xqqzqgqr5wwk0uyzcaf26hfglfdxavvx29j39fgarhmvk54cuf2vmza4wqpj2q649ky3wwc27p4fc2jdv5qvakfu97sagrrdyy3g0ch2g7fhp598qmrp09jhyhm5wah5xqqzqgqrygl8kyfqsj6tm5gwey2rua95ckd4da62msl0a4gvvs2uxrjhgzea6psry6d4pr545tgmvf3srdtmeqsctrfgdhml24dnav9vsxq0qcy8w6twde5kuemnyvqqyqgq3jueky8qf4l9mqzehx2sqx9lge2k6dltqvwcps5050wdcxmgrcqwjqvp8x49cle6hcnq6a75mnh99k600u0gte8etpx8ghcugqfr6ygalhmj6
+
+---------------------------------------------------------------------
+                           ♞ Play Game ♘
+---------------------------------------------------------------------
+
+Executing the Fool's Mate test game...
+Broadcasting the game result, winner record: aleo1s3ws5tra87fjycnjrwsjcrnw2qxr8jfqqdugnf0xzqqw29q9m5pqem2u4t, loser record: aleo1ashyu96tjwe63u0gtnnv8z5lhapdu4l5pjsl2kha7fv7hvz2eqxs5dz0rg
+Executed finish_game, transaction ID: at18zxqcqchf8806zdpmv4fxn6hjxvqvgknep840ys242x5d2w5rufqm0pw8m
+Found encrypted record for finished game: {
+  program_id: provable_toronoto25_knightfall.aleo,
+  function_name: finish_game,
+  arguments: [
+    aleo1s3ws5tra87fjycnjrwsjcrnw2qxr8jfqqdugnf0xzqqw29q9m5pqem2u4t,
+    aleo1ashyu96tjwe63u0gtnnv8z5lhapdu4l5pjsl2kha7fv7hvz2eqxs5dz0rg,
+    1u64
+  ]
+}
+
+
+---------------------------------------------------------------------
+                       ♞ Final Board State ♘
+---------------------------------------------------------------------
+
+  a b c d e f g h
+ +-----------------+
+8|░ ░ ░ ░ ♚ ░ ░ ░ |8
+7|░ ░ ░ ░ ░   ░ ♟ |7
+6|  ░ ░ ░ ░ ░     |6
+5|░           ♟ ♕ |5
+4|      ♙ ♙       |4
+3|                |3
+2|♙ ♙ ♙     ♙ ♙ ♙ |2
+1|♖ ♘ ♗   ♔ ♗ ♘ ♖ |1
+ +-----------------+
+  a b c d e f g h
