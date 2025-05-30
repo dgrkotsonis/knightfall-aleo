@@ -649,4 +649,20 @@ program provable_toronoto25_knightfall.aleo {
         // assert(get_array_value(board1a, get_board_index(27u32)) != 1field);
     }
     
+    ///////////////////////////
+    //  ULTIMATE TO DO LIST  //
+    ///////////////////////////
+    
+    // 1. reduce logic in pawn_move_logic
+    // 2. get test_pawn_capture working
+    // 3. get test_pawn_two_square_first_move working
+    // 4. code rules for knights
+    // 5. code rules for rooks
+    // 6. code rules for bishops
+    // 7. code rules for queens
+    // 8. code rules for kings
+    // 9. tackle visibility rules
+    // 10. calculate ELO rank
+    // 11. connect the pieces
+
 }
