@@ -353,6 +353,84 @@ program provable_toronoto25_knightfall.aleo {
     //                              MOVE VALIDATION                                   //
     ////////////////////////////////////////////////////////////////////////////////////
 
+    // PAWN //
+    inline is_white_pawn_first_move(idx: u32) -> bool {
+        // White pawns start at rank 2: indices 48–55
+        return (idx >= 48u32) && (idx <= 55u32);
+    }
+
+    inline is_black_pawn_first_move(idx: u32) -> bool {
+        // Black pawns start at rank 7: indices 8–15
+        return (idx >= 8u32) && (idx <= 15u32);
+    }
+
+    inline is_white_pawn_promotion(idx: u32) -> bool {
+        // White promotion: rank 8, indices 0–7
+        return (idx <= 7u32);
+    }
+
+    inline is_black_pawn_promotion(idx: u32) -> bool {
+        // Black promotion: rank 1, indices 56–63
+        return (idx >= 56u32) && (idx <= 63u32);
+    }
+
+    inline pawn_move_logic(
+        board1: [field; 32],
+        board2: [field; 32],
+        from: u32,
+        to: u32,
+        is_white: bool
+    ) -> bool {
+        // Get piece at from
+        let from_arr: u8 = (from < 32u32) ? 1u8 : 2u8;
+        let from_idx: u32 = get_board_index(from);
+        let piece: field = (from_arr == 1u8) ? get_array_value(board1, from_idx) : get_array_value(board2, from_idx);
+
+        // Get piece at to
+        let to_arr: u8 = (to < 32u32) ? 1u8 : 2u8;
+        let to_idx: u32 = get_board_index(to);
+        let dest_piece: field = (to_arr == 1u8) ? get_array_value(board1, to_idx) : get_array_value(board2, to_idx);
+
+        // Direction: white moves -8, black moves +8
+        let dir: i32 = is_white ? -8i32 : 8i32;
+        let from_i32: i32 = from as i32;
+        let to_i32: i32 = to as i32;
+
+        // Forward one square
+        let forward_one: bool = (to_i32 == from_i32 + dir) && (dest_piece == 0field);
+
+        // Forward two squares (first move only)
+        let forward_two: bool = (is_white && is_white_pawn_first_move(from) && (to_i32 == from_i32 + 2i32 * dir) && (dest_piece == 0field))
+            || (!is_white && is_black_pawn_first_move(from) && (to_i32 == from_i32 + 2i32 * dir) && (dest_piece == 0field));
+
+        // Diagonal capture
+        let diag_left: bool = (to_i32 == from_i32 + dir - 1i32) && (dest_piece != 0field) && (is_white ? (dest_piece < 10field) : (dest_piece > 10field));
+        let diag_right: bool = (to_i32 == from_i32 + dir + 1i32) && (dest_piece != 0field) && (is_white ? (dest_piece < 10field) : (dest_piece > 10field));
+
+        // Promotion
+        let promotion: bool = (is_white && is_white_pawn_promotion(to)) || (!is_white && is_black_pawn_promotion(to));
+
+        // Valid move if any of the above
+        let valid_move: bool = forward_one || forward_two || diag_left || diag_right;
+
+        // If promotion, must be a valid move to promotion square
+        return valid_move && (!promotion || (promotion && valid_move));
+    }
+
+    // KNIGHT
+
+    
+    // ROOK
+    
+
+    // BISHOP
+
+
+    // QUEEN
+
+
+    // KING
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -555,4 +633,5 @@ program provable_toronoto25_knightfall.aleo {
         assert(contains_piece(board2e, 16field) == false);
     }
 
+    
 }
