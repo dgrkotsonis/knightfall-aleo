@@ -2325,6 +2325,11 @@ function test_fools_mate:
     is.eq r849 false into r850;
     assert.eq r850 true;
 
+function test_pawn_capture:
+    input r0 as u8.private;
+    is.eq true true into r1;
+    assert.eq r1 true;
+
 closure main:
     input r0 as u8;
     cast 2field 3field 4field 5field 6field 4field 3field 2field 1field 1field 1field 1field 1field 1field 1field 1field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field 0field into r1 as [field; 32u32];
