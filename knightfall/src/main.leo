@@ -364,52 +364,126 @@ program provable_toronoto25_knightfall.aleo {
         return (idx >= 8u32) && (idx <= 15u32);
     }
 
+    // TODO: used?
     inline is_white_pawn_promotion(idx: u32) -> bool {
         // White promotion: rank 8, indices 0–7
         return (idx <= 7u32);
     }
 
+    // TODO: used?
     inline is_black_pawn_promotion(idx: u32) -> bool {
         // Black promotion: rank 1, indices 56–63
         return (idx >= 56u32) && (idx <= 63u32);
     }
 
-    // TODO: first move 2 squares, diagonal capture, promotion
-    inline pawn_move_logic(
+    // ex white pawn: let can_advance: bool = pawn_move_advance(board1, 52i32, 36i32, -8i32, true); // f2 to f4 (first move, two squares)
+    inline pawn_move_advance(
         board1: [field; 32],
-        board2: [field; 32],
-        from: u32,
-        to: u32,
+        from: i32,
+        to: i32,
+        dir: i32,
         is_white: bool
     ) -> bool {
-        // Get piece at from
-        let from_arr: u8 = (from < 32u32) ? 1u8 : 2u8;
-        let from_idx: u32 = get_board_index(from);
-        let piece: field = (from_arr == 1u8) ? get_array_value(board1, from_idx) : get_array_value(board2, from_idx);
+        // One square forward
+        let one_forward: bool = to == from + dir;
 
-        // Get piece at to
+        // Two squares forward on first move
+        let from_u32: u32 = from as u32;
+        let two_forward: bool = is_white
+            ? (is_white_pawn_first_move(from_u32) && to == from + 2i32 * dir)
+            : (is_black_pawn_first_move(from_u32) && to == from + 2i32 * dir);
+
+        return one_forward || two_forward;
+    }
+
+    inline pawn_move_capture(
+        board1: [field; 32],
+        board2: [field; 32],
+        from: i32,
+        to: i32,
+        dir: i32
+    ) -> bool {
+        // Get destination piece
+        let to_arr: u8 = (to < 32i32) ? 1u8 : 2u8;
+        let to_idx: u32 = get_board_index(to as u32);
+        let dest_piece: field = (to_arr == 1u8) ? get_array_value(board1, to_idx) : get_array_value(board2, to_idx);
+
+        // Diagonal left
+        let diag_left: bool = (to == from + dir - 1i32) && (dest_piece != 0field);
+        // Diagonal right
+        let diag_right: bool = (to == from + dir + 1i32) && (dest_piece != 0field);
+
+        return diag_left || diag_right;
+    }
+
+    // Example: Black pawn moves to a1 (index 56)
+    // let (board1b, board2c) = pawn_move_promotion(board1a, board2b, 56u32, false, 5field); // promote to queen
+    inline pawn_move_promotion(
+        board1: [field; 32],
+        board2: [field; 32],
+        to: u32,
+        is_white: bool,
+        promote_to: field // 5field=queen, 4field=bishop, 3field=knight, 2field=rook
+    ) -> ([field; 32], [field; 32]) {
+        // Determine which array and index for 'to'
+        let to_arr: u8 = (to < 32u32) ? 1u8 : 2u8;
+        let to_idx: u32 = get_board_index(to);
+
+        // Check if promotion square
+        let is_promotion: bool = is_white
+            ? (to <= 7u32)
+            : (to >= 56u32 && to <= 63u32);
+
+        // If promotion, set the promoted piece; else, leave as is
+        let new_board1: [field; 32] = (to_arr == 1u8 && is_promotion)
+            ? set_array_value(board1, to_idx, promote_to)
+            : board1;
+
+        let new_board2: [field; 32] = (to_arr == 2u8 && is_promotion)
+            ? set_array_value(board2, to_idx, promote_to)
+            : board2;
+
+        return (new_board1, new_board2);
+    }
+
+    // KNIGHT
+    inline knight_move_or_capture_logic(
+        from: u32,
+        to: u32,
+        board1: [field; 32],
+        board2: [field; 32],
+        is_white: bool
+    ) -> bool {
+        // Convert indices to (row, col)
+        let from_row: i32 = (from as i32) / 8i32;
+        let from_col: i32 = (from as i32) % 8i32;
+        let to_row: i32 = (to as i32) / 8i32;
+        let to_col: i32 = (to as i32) % 8i32;
+
+        // Calculate row and column differences (absolute value)
+        let row_diff: i32 = from_row - to_row;
+        let row_diff_abs: i32 = (row_diff < 0i32) ? -row_diff : row_diff;
+        let col_diff: i32 = from_col - to_col;
+        let col_diff_abs: i32 = (col_diff < 0i32) ? -col_diff : col_diff;
+
+        // Knight moves: (2,1) or (1,2)
+        let is_knight_move: bool = (row_diff_abs == 2i32 && col_diff_abs == 1i32) || (row_diff_abs == 1i32 && col_diff_abs == 2i32);
+
+        // Get destination piece
         let to_arr: u8 = (to < 32u32) ? 1u8 : 2u8;
         let to_idx: u32 = get_board_index(to);
         let dest_piece: field = (to_arr == 1u8) ? get_array_value(board1, to_idx) : get_array_value(board2, to_idx);
 
-        // Only allow diagonal capture for this test
-        let dir: i32 = is_white ? -8i32 : 8i32;
-        let from_i32: i32 = from as i32;
-        let to_i32: i32 = to as i32;
+        // For this example, assume white pieces are >= 10field, black < 10field
+        let is_enemy: bool = is_white
+            ? (dest_piece != 0field && dest_piece < 10field)
+            : (dest_piece != 0field && dest_piece >= 10field);
 
-        // Diagonal left
-        let diag_left: bool = (to_i32 == from_i32 + dir - 1i32) && (dest_piece != 0field);
-        // Diagonal right
-        let diag_right: bool = (to_i32 == from_i32 + dir + 1i32) && (dest_piece != 0field);
+        // Allow move if destination is empty or has enemy piece
+        let is_empty: bool = dest_piece == 0field;
 
-        // Only allow diagonal capture for this test
-        let valid_move: bool = diag_left || diag_right;
-
-        return valid_move;
+        return is_knight_move && (is_empty || is_enemy);
     }
-
-    // KNIGHT
-
     
     // ROOK
     
@@ -623,8 +697,39 @@ program provable_toronoto25_knightfall.aleo {
         assert(contains_piece(board1e, 16field) == false);
         assert(contains_piece(board2e, 16field) == false);
     }
+    
+    // pawn
+    // Output 1u8 means the test passed.
+        transition test_pawn_two_squares(dummy: u8) -> u8 {
+        // White pawn at f2 (53), moving to f4 (37) on first move
+        let board1: [field; 32] = [
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field
+        ];
+        let can_advance: bool = pawn_move_advance(board1, 53i32, 37i32, -8i32, true);
+        return can_advance ? 1u8 : 0u8;
+    }
 
-    transition test_pawn_capture(dummy: u8) {
+    // Output 1u8 means the test passed.
+    transition test_pawn_one_square(dummy: u8) -> u8 {
+        // White pawn at f4 (37), trying to move to f6 (21) (should NOT be allowed)
+        let board1: [field; 32] = [
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
+            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field
+        ];
+        let can_advance_two: bool = pawn_move_advance(board1, 37i32, 21i32, -8i32, true); // Should be false
+        let can_advance_one: bool = pawn_move_advance(board1, 37i32, 29i32, -8i32, true); // Should be true
+        // Return 1u8 if only the one-square move is allowed
+        return (!can_advance_two && can_advance_one) ? 1u8 : 0u8;
+    }
+
+    // not fully working
+    transition test_pawn_capture_diagonal(dummy: u8) {
+        // Place black pawn at d5 (27), white pawn at e4 (36)
         let board1: [field; 32] = [
             0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
             0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
@@ -638,15 +743,34 @@ program provable_toronoto25_knightfall.aleo {
             0field, 0field, 0field, 0field, 11field, 0field, 0field, 0field
         ];
 
-        // TODO: pawn_move_logic too complicated rn
-        // let valid_capture: bool = pawn_move_logic(board1, board2, 36u32, 27u32, true);
-        // assert(valid_capture == true);
-        let valid_capture: bool = true;
-        assert(valid_capture == true);
+        let dir: i32 = -8i32; // White moves up the board
 
-        // let (board1a, board2a) = move_piece(board1, board2, 36u32, 27u32);
-        // assert(get_array_value(board1a, get_board_index(27u32)) == 11field);
-        // assert(get_array_value(board1a, get_board_index(27u32)) != 1field);
+        // Only test the invalid capture (to an empty square)
+        let invalid_capture: bool = pawn_move_capture(board1, board2, 36i32, 29i32, dir);
+
+        // Return 1u8 if the test passes (invalid_capture is false), else 0u8
+        // return (invalid_capture == false) ? 1u8 : 0u8;
     }
+
+    // ran into issues when writing test for pawn promotion
+
+    // knight  
+    // TODO: need test for knight movement & knight capture
+
+    ///////////////////////////
+    //  ULTIMATE TO DO LIST  //
+    ///////////////////////////
     
+    // 1. reduce logic in pawn_move_advance
+    // 2. get test_pawn_capture working
+    // 3. get test_pawn_two_square_first_move working
+    // 4. code rules for knights
+    // 5. code rules for rooks
+    // 6. code rules for bishops
+    // 7. code rules for queens
+    // 8. code rules for kings
+    // 9. tackle visibility rules
+    // 10. calculate ELO rank
+    // 11. connect the pieces
+
 }

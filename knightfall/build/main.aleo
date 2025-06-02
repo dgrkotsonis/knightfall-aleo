@@ -2325,10 +2325,81 @@ function test_fools_mate:
     is.eq r849 false into r850;
     assert.eq r850 true;
 
-function test_pawn_capture:
+function test_pawn_two_squares:
     input r0 as u8.private;
-    is.eq true true into r1;
-    assert.eq r1 true;
+    add 53i32 -8i32 into r1;
+    is.eq 37i32 r1 into r2;
+    cast 53i32 into r3 as u32;
+    gte r3 48u32 into r4;
+    lte r3 55u32 into r5;
+    and r4 r5 into r6;
+    mul 2i32 -8i32 into r7;
+    add 53i32 r7 into r8;
+    is.eq 37i32 r8 into r9;
+    and r6 r9 into r10;
+    gte r3 8u32 into r11;
+    lte r3 15u32 into r12;
+    and r11 r12 into r13;
+    mul 2i32 -8i32 into r14;
+    add 53i32 r14 into r15;
+    is.eq 37i32 r15 into r16;
+    and r13 r16 into r17;
+    ternary true r10 r17 into r18;
+    or r2 r18 into r19;
+    ternary r19 1u8 0u8 into r20;
+    output r20 as u8.private;
+
+function test_pawn_one_square:
+    input r0 as u8.private;
+    add 37i32 -8i32 into r1;
+    is.eq 21i32 r1 into r2;
+    cast 37i32 into r3 as u32;
+    gte r3 48u32 into r4;
+    lte r3 55u32 into r5;
+    and r4 r5 into r6;
+    mul 2i32 -8i32 into r7;
+    add 37i32 r7 into r8;
+    is.eq 21i32 r8 into r9;
+    and r6 r9 into r10;
+    gte r3 8u32 into r11;
+    lte r3 15u32 into r12;
+    and r11 r12 into r13;
+    mul 2i32 -8i32 into r14;
+    add 37i32 r14 into r15;
+    is.eq 21i32 r15 into r16;
+    and r13 r16 into r17;
+    ternary true r10 r17 into r18;
+    or r2 r18 into r19;
+    add 37i32 -8i32 into r20;
+    is.eq 29i32 r20 into r21;
+    cast 37i32 into r22 as u32;
+    gte r22 48u32 into r23;
+    lte r22 55u32 into r24;
+    and r23 r24 into r25;
+    mul 2i32 -8i32 into r26;
+    add 37i32 r26 into r27;
+    is.eq 29i32 r27 into r28;
+    and r25 r28 into r29;
+    gte r22 8u32 into r30;
+    lte r22 15u32 into r31;
+    and r30 r31 into r32;
+    mul 2i32 -8i32 into r33;
+    add 37i32 r33 into r34;
+    is.eq 29i32 r34 into r35;
+    and r32 r35 into r36;
+    ternary true r29 r36 into r37;
+    or r21 r37 into r38;
+    not r19 into r39;
+    and r39 r38 into r40;
+    ternary r40 1u8 0u8 into r41;
+    output r41 as u8.private;
+
+function test_pawn_capture_diagonal:
+    input r0 as u8.private;
+    cast 29i32 into r1 as u32;
+    add 36i32 -8i32 into r2;
+    add 36i32 -8i32 into r3;
+    add r3 1i32 into r4;
 
 closure main:
     input r0 as u8;
