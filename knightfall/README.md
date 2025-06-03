@@ -1,5 +1,46 @@
 # knightfall.aleo
 
+## Some suggestions
+Not completely checking validity. For instance pawn_move_advance will allow the pawn to advance even if the square it's advancing to is occupied.
+Can first define a struct Board for convenience:
+```
+struct Board {
+  x: [field; 32],
+  y: [field; 32],
+}
+```
+eliminate manually passing around both halves of the board. 
+
+Then define a function or inline to access items at squares by row and column:
+```
+function access(board: Board, row: i8, col: i8) -> field {
+    ...
+}
+```
+And have it return a specified value if row and col are out of bounds, maybe just -1field.
+
+Then when checking for a horizontal rook move, could do something like this
+// Suppose we have from_row, from_col representing the rook's current position, and we want to check in one direction, and to_row, to_col
+// is the square we're trying to move to.
+```
+for i: i8 in 0i8..8i8 {
+    let next_col: i8 = from_col + i;
+    let piece = access(board, from_row, next_col);
+    if from_row == to_row && next_col == to_col {
+        // If the `piece` is empty or the opponent's piece, do the move.
+        // Otherwise, the move is invalid. 
+        // ......
+    } else {
+        // If the `piece` is occupied or off the board, moving this direction isn't going to work. 
+        // If the `piece` is just empty, we're still OK.
+    }
+}
+```
+
+And then check for all 4 possible directions like this. 
+
+The tricky part is that program can't break out of the loop like a normal programming language, but can return from inside it.
+
 ## Build Guide
 
 To compile this Aleo program, run:
