@@ -486,7 +486,7 @@ program provable_toronoto25_knightfall.aleo {
     }
     
     // ROOK
-    
+
 
     // BISHOP
 
@@ -495,7 +495,55 @@ program provable_toronoto25_knightfall.aleo {
 
 
     // KING
+    inline king_move_logic(from: u32, to: u32) -> bool {
+        let from_row: i32 = (from as i32) / 8i32;
+        let from_col: i32 = (from as i32) % 8i32;
+        let to_row: i32 = (to as i32) / 8i32;
+        let to_col: i32 = (to as i32) % 8i32;
+        let row_diff: i32 = from_row - to_row;
+        let row_diff_abs: i32 = (row_diff < 0i32) ? -row_diff : row_diff;
+        let col_diff: i32 = from_col - to_col;
+        let col_diff_abs: i32 = (col_diff < 0i32) ? -col_diff : col_diff;
+        return (row_diff_abs <= 1i32) && (col_diff_abs <= 1i32) && !(row_diff_abs == 0i32 && col_diff_abs == 0i32);
+    }
 
+    inline king_move_or_capture_logic(
+        from: u32,
+        to: u32,
+        board1: [field; 32],
+        board2: [field; 32],
+        is_white: bool
+    ) -> bool {
+        // Convert indices to (row, col)
+        let from_row: i32 = (from as i32) / 8i32;
+        let from_col: i32 = (from as i32) % 8i32;
+        let to_row: i32 = (to as i32) / 8i32;
+        let to_col: i32 = (to as i32) % 8i32;
+
+        // Calculate row and column differences (absolute value)
+        let row_diff: i32 = from_row - to_row;
+        let row_diff_abs: i32 = (row_diff < 0i32) ? -row_diff : row_diff;
+        let col_diff: i32 = from_col - to_col;
+        let col_diff_abs: i32 = (col_diff < 0i32) ? -col_diff : col_diff;
+
+        // King moves: one square in any direction
+        let is_king_move: bool = (row_diff_abs <= 1i32) && (col_diff_abs <= 1i32) && !(row_diff_abs == 0i32 && col_diff_abs == 0i32);
+
+        // Get destination piece
+        let to_arr: u8 = (to < 32u32) ? 1u8 : 2u8;
+        let to_idx: u32 = get_board_index(to);
+        let dest_piece: field = (to_arr == 1u8) ? get_array_value(board1, to_idx) : get_array_value(board2, to_idx);
+
+        // For this example, assume white pieces are >= 10field, black < 10field
+        let is_enemy: bool = is_white
+            ? (dest_piece != 0field && dest_piece < 10field)
+            : (dest_piece != 0field && dest_piece >= 10field);
+
+        let is_empty: bool = dest_piece == 0field;
+
+        // Valid king move: one square, and destination is empty or enemy
+        return is_king_move && (is_empty || is_enemy);
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////
@@ -700,7 +748,7 @@ program provable_toronoto25_knightfall.aleo {
     
     // pawn
     // Output 1u8 means the test passed.
-        transition test_pawn_two_squares(dummy: u8) -> u8 {
+    transition test_pawn_two_squares(dummy: u8) -> u8 {
         // White pawn at f2 (53), moving to f4 (37) on first move
         let board1: [field; 32] = [
             0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
@@ -727,30 +775,14 @@ program provable_toronoto25_knightfall.aleo {
         return (!can_advance_two && can_advance_one) ? 1u8 : 0u8;
     }
 
-    // not fully working
-    transition test_pawn_capture_diagonal(dummy: u8) {
-        // Place black pawn at d5 (27), white pawn at e4 (36)
-        let board1: [field; 32] = [
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 1field, 0field, 0field, 0field, 0field
-        ];
-        let board2: [field; 32] = [
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 0field, 0field, 0field, 0field, 0field,
-            0field, 0field, 0field, 0field, 11field, 0field, 0field, 0field
-        ];
-
-        let dir: i32 = -8i32; // White moves up the board
-
-        // Only test the invalid capture (to an empty square)
-        let invalid_capture: bool = pawn_move_capture(board1, board2, 36i32, 29i32, dir);
-
-        // Return 1u8 if the test passes (invalid_capture is false), else 0u8
-        // return (invalid_capture == false) ? 1u8 : 0u8;
+    // test king movement logic, returns 1u8 if check passes
+    transition test_king_move_only(dummy: u8) -> u8 {
+        let move_empty: bool = king_move_logic(60u32, 61u32);
+        let move_invalid: bool = king_move_logic(60u32, 62u32);
+        let move_no_move: bool = king_move_logic(60u32, 60u32);
+        return (move_empty && !move_invalid && !move_no_move) ? 1u8 : 0u8;
     }
+    // off-chain test: can use output from get_square_value to check in another programming language
 
     // ran into issues when writing test for pawn promotion
 

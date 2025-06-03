@@ -26,6 +26,13 @@ To test the `create_game` function, run:
 To test the `finish_game` function, run: 
 -TODO-
 
+To test pawn movement logic:
+`leo run test_pawn_two_squares 0u8`
+`leo run test_pawn_two_squares 0u8`
+
+To test king movement logic:
+`leo run test_king_move_only 0u8`
+
 ## Running the Fool's Mate Example Locally
 
 ### LOCAL NODE
@@ -109,3 +116,23 @@ leo execute create_game aleo1rhgdu77hgyqd3xjj8ucu3jj9r2krwz6mnzyd80gncr5fxcwlh5r
         _nonce: 5525759172236317056254609959218622800331808908231474460568803993892218953813group.public 
     }" -b --endpoint http://localhost:3030 --program knightfall
 ```
+
+## Off-Chain Tests
+
+Example: 
+# Suppose you have a function to call Leo transitions and get the output:
+def get_square_value(idx):
+    # Call: leo run get_square_value 0u8 <idx>
+    # Parse and return the output (as int or string)
+    ...
+
+# Set up your board in Leo, then:
+pawn_square = get_square_value(36)  # e4
+target_square = get_square_value(27)  # d5
+
+# Off-chain logic:
+if pawn_square == 11 and target_square == 1:
+    # Check if move is a valid diagonal capture
+    print("Valid capture!")
+else:
+    print("Invalid capture.")
