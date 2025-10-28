@@ -354,6 +354,8 @@ program provable_toronoto25_knightfall.aleo {
     ////////////////////////////////////////////////////////////////////////////////////
 
     // PAWN //
+    // TODO: En passant capture not implemented - requires tracking last move state
+    // TODO: Promotion detection not integrated with move validation - needs coordination with pawn_move_promotion()
     inline is_white_pawn_first_move(idx: u32) -> bool {
         // White pawns start at rank 2: indices 48–55
         return (idx >= 48u32) && (idx <= 55u32);
@@ -418,6 +420,8 @@ program provable_toronoto25_knightfall.aleo {
 
     // Example: Black pawn moves to a1 (index 56)
     // let (board1b, board2c) = pawn_move_promotion(board1a, board2b, 56u32, false, 5field); // promote to queen
+    // NOTE: This function handles the promotion AFTER the move is made
+    // TODO: Integrate promotion detection with pawn_move_or_capture_logic() for complete validation
     inline pawn_move_promotion(
         board1: [field; 32],
         board2: [field; 32],
@@ -506,7 +510,18 @@ program provable_toronoto25_knightfall.aleo {
         let is_capture: bool = is_diagonal && is_enemy;
         
         // Valid pawn move: forward (1 or 2) OR diagonal capture
-        // NOTE: En passant not implemented (complex edge case, deferred)
+        // 
+        // MISSING FEATURES (TODO):
+        // 1. EN PASSANT: Special capture where pawn captures an enemy pawn that just moved 2 squares
+        //    - Requires: tracking last move (which piece moved, from where, to where)
+        //    - Complexity: moderate - need game state to track previous move
+        //    - Rarity: ~2-5% of games
+        // 
+        // 2. PROMOTION DETECTION: This function validates the move but doesn't detect promotion
+        //    - When pawn reaches rank 8 (white) or rank 1 (black), it must promote
+        //    - Current: pawn_move_promotion() exists but must be called separately
+        //    - TODO: Return tuple (is_valid, needs_promotion) or add promotion flag to move validation
+        //    - Alternatively: Game flow should check if destination is promotion rank after move
         return is_one_forward || is_two_forward || is_capture;
     }
 
@@ -648,6 +663,11 @@ program provable_toronoto25_knightfall.aleo {
     }
 
     // KING
+    // TODO: Castling not implemented - requires checking:
+    //   1. King and rook haven't moved yet (requires game state tracking)
+    //   2. No pieces between king and rook
+    //   3. King not in check, doesn't pass through check, doesn't end in check
+    //   4. Complexity: high - needs extensive game state
     inline king_move_logic(from: u32, to: u32) -> bool {
         let from_row: i32 = (from as i32) / 8i32;
         let from_col: i32 = (from as i32) % 8i32;
@@ -694,7 +714,16 @@ program provable_toronoto25_knightfall.aleo {
 
         let is_empty: bool = dest_piece == 0field;
 
-        // Valid king move: one square, and destination is empty or enemy
+        // Valid king move: one square in any direction, and destination is empty or enemy
+        // 
+        // MISSING FEATURE (TODO):
+        // CASTLING: Special move where king moves 2 squares toward rook, rook jumps over
+        //   - Requirements:
+        //     * Neither piece has moved before (needs move history tracking)
+        //     * No pieces between them
+        //     * King not in check, doesn't pass through check, doesn't land in check
+        //   - Complexity: high - requires significant game state tracking
+        //   - Rarity: ~20-30% of games
         return is_king_move && (is_empty || is_enemy);
     }
 
